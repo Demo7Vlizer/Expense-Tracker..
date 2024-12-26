@@ -4,12 +4,20 @@ import '../views/income_page.dart';
 import '../views/expense_page.dart';
 import '../models/income_model.dart';
 import '../models/expense_model.dart';
+import '../views/transaction_history.dart';
 
 class DrawerMenu extends StatelessWidget {
   final Function(Income) onAddIncome;
   final Function(Expense) onAddExpense;
+  final List<Income> incomes;
+  final List<Expense> expenses;
 
-  DrawerMenu({required this.onAddIncome, required this.onAddExpense});
+  DrawerMenu({
+    required this.onAddIncome,
+    required this.onAddExpense,
+    required this.incomes,
+    required this.expenses,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -56,6 +64,20 @@ class DrawerMenu extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   builder: (context) => ExpensePage(onAddExpense: onAddExpense),
+                ),
+              );
+            },
+          ),
+          ListTile(
+            title: Text('Transaction History'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TransactionHistoryPage(
+                    incomes: incomes,
+                    expenses: expenses,
+                  ),
                 ),
               );
             },

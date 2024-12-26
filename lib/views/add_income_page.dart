@@ -54,6 +54,7 @@ class _AddIncomePageState extends State<AddIncomePage> {
                   title: titleController.text,
                   amount: double.parse(amountController.text),
                   category: selectedCategory,
+                  date: DateTime.now(),
                 );
                 widget.onAddIncome(income);
                 Navigator.pop(context);

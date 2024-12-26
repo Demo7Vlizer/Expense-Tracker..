@@ -54,6 +54,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                   title: titleController.text,
                   amount: double.parse(amountController.text),
                   category: selectedCategory,
+                  date: DateTime.now(),
                 );
                 widget.onAddExpense(expense);
                 Navigator.pop(context);
