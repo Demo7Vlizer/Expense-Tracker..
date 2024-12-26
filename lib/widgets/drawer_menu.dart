@@ -49,7 +49,7 @@ class DrawerMenu extends StatelessWidget {
           ListTile(
             title: Text('Income'),
             onTap: () {
-              Navigator.pushReplacement(
+              Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => IncomePage(onAddIncome: onAddIncome),
@@ -60,7 +60,7 @@ class DrawerMenu extends StatelessWidget {
           ListTile(
             title: Text('Expense'),
             onTap: () {
-              Navigator.pushReplacement(
+              Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => ExpensePage(onAddExpense: onAddExpense),
