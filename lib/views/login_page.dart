@@ -22,7 +22,7 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('Login'),
+        title: Text('Income & Expense Tracker'),
         centerTitle: true,
         backgroundColor: Colors.blueAccent,
       ),
@@ -34,8 +34,8 @@ class _LoginPageState extends State<LoginPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Image.asset(
-                  'assets/images/login_image.png', // Path to your image
-                  height: 150, // Adjust height as needed
+                  'assets/images/login_image.png',
+                  height: 150,
                 ),
                 SizedBox(height: 20),
                 Text(
@@ -141,7 +141,7 @@ class _LoginPageState extends State<LoginPage> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          backgroundColor: Colors.blueAccent, // Corrected 'primary' to 'backgroundColor'
+                          backgroundColor: Colors.blueAccent,
                         ),
                         child: Text('Login', style: TextStyle(fontSize: 16)),
                       ),

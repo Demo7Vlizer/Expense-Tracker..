@@ -5,4 +5,8 @@ class AuthService {
   static bool login(String email, String password) {
     return email == predefinedEmail && password == predefinedPassword;
   }
+
+  static void logout() {
+    // Handle logout logic
+  }
 }
