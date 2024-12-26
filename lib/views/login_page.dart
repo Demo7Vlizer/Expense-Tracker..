@@ -1,57 +1,65 @@
 // lib/views/login_page.dart
 import 'package:flutter/material.dart';
-import 'home_page.dart'; // Import the HomePage
+import 'home_page.dart';
+import '../utils/constants.dart';
+import '../services/auth_service.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    // Create controllers for the text fields
-    final TextEditingController emailController = TextEditingController();
-    final TextEditingController passwordController = TextEditingController();
-    final GlobalKey<FormState> _formKey =
-        GlobalKey<FormState>(); // Key for form validation
+  _LoginPageState createState() => _LoginPageState();
+}
 
+class _LoginPageState extends State<LoginPage> {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool _obscureText = true;
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Set background color to match the image
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('Login'),
-        backgroundColor: Colors.blueAccent, // Change app bar color
+        centerTitle: true,
+        backgroundColor: Colors.blueAccent,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Center(
-          // Center the content vertically
           child: SingleChildScrollView(
-            // Allow scrolling if the keyboard appears
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                // Add the image at the top of the login form
                 Image.asset(
                   'assets/images/login_image.png', // Path to your image
-                  height: 300, // Adjust height as needed
+                  height: 150, // Adjust height as needed
                 ),
-                // SizedBox(height: 5), // Space between image and title
-                // Text(
-                //   'Login',
-                //   style: TextStyle(
-                //     fontSize: 32,
-                //     fontWeight: FontWeight.bold,
-                //     color:
-                //         Colors.black87, // Darker text color for better contrast
-                //   ),
-                //   textAlign: TextAlign.center, // Center the text
-                // ),
-                SizedBox(height: 20), // Space between title and fields
+                SizedBox(height: 20),
+                Text(
+                  'Welcome Back!',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+                SizedBox(height: 10),
+                Text(
+                  'Please login to your account',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey,
+                  ),
+                ),
+                SizedBox(height: 40),
                 Form(
-                  // Wrap the Column in a Form widget
-                  key: _formKey, // Assign the form key
+                  key: _formKey,
                   child: Column(
                     children: <Widget>[
                       TextFormField(
-                        // Use TextFormField for validation
                         controller: emailController,
                         decoration: InputDecoration(
                           labelText: 'Email',
@@ -66,19 +74,16 @@ class LoginPage extends StatelessWidget {
                           ),
                         ),
                         validator: (value) {
-                          // Validation logic for email
                           if (value == null || value.isEmpty) {
                             return 'Please enter your email';
                           }
-                          // Add more email validation if needed
-                          return null; // Return null if validation passes
+                          return null;
                         },
                       ),
-                      SizedBox(height: 16.0), // Space between fields
+                      SizedBox(height: 16.0),
                       TextFormField(
-                        // Use TextFormField for validation
                         controller: passwordController,
-                        obscureText: true, // Hides the password
+                        obscureText: _obscureText,
                         decoration: InputDecoration(
                           labelText: 'Password',
                           border: OutlineInputBorder(),
@@ -90,52 +95,65 @@ class LoginPage extends StatelessWidget {
                             borderSide:
                                 BorderSide(color: Colors.red, width: 2.0),
                           ),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscureText
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                              color: Colors.blueAccent,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _obscureText = !_obscureText;
+                              });
+                            },
+                          ),
                         ),
                         validator: (value) {
-                          // Validation logic for password
                           if (value == null || value.isEmpty) {
                             return 'Please enter your password';
                           }
-                          return null; // Return null if validation passes
+                          return null;
                         },
                       ),
-                      SizedBox(height: 24.0), // Space between fields and button
+                      SizedBox(height: 24.0),
                       ElevatedButton(
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
-                            // Validate the form
-                            // Navigate to HomePage when the button is pressed
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => HomePage()),
-                            );
-                          } else {
-                            // Show error message if validation fails
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  'Please fix the errors in red',
-                                  style: TextStyle(color: Colors.red),
-                                ),
-                                backgroundColor: Colors.white,
-                              ),
-                            );
+                            if (AuthService.login(emailController.text,
+                                passwordController.text)) {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => HomePage()),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                    content: Text('Invalid email or password')),
+                              );
+                            }
                           }
                         },
                         style: ElevatedButton.styleFrom(
                           padding: EdgeInsets.symmetric(
                               horizontal: 40, vertical: 12),
                           shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(8), // Rounded button
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                          backgroundColor: Colors.blueAccent, // Button color
+                          backgroundColor: Colors.blueAccent, // Corrected 'primary' to 'backgroundColor'
                         ),
-                        child: Text('Login'),
+                        child: Text('Login', style: TextStyle(fontSize: 16)),
                       ),
                     ],
                   ),
+                ),
+                SizedBox(height: 20),
+                TextButton(
+                  onPressed: () {
+                    // Navigate to the registration page or perform another action
+                  },
+                  child: Text('Don\'t have an account? Sign Up'),
                 ),
               ],
             ),
