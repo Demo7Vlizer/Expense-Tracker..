@@ -5,6 +5,7 @@ import '../views/expense_page.dart';
 import '../models/income_model.dart';
 import '../models/expense_model.dart';
 import '../views/transaction_history.dart';
+import '../services/auth_service.dart';
 
 class DrawerMenu extends StatelessWidget {
   final Function(Income) onAddIncome;
@@ -85,7 +86,8 @@ class DrawerMenu extends StatelessWidget {
           ListTile(
             title: Text('Logout'),
             onTap: () {
-              // Handle logout
+              AuthService.logout();
+              Navigator.pushReplacementNamed(context, '/');
             },
           ),
         ],

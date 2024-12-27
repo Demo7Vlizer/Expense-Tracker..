@@ -1,5 +1,7 @@
 // lib/views/home_page.dart
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'add_income_page.dart';
 import 'add_expense_page.dart';
 import '../services/auth_service.dart';
@@ -17,6 +19,43 @@ class _HomePageState extends State<HomePage> {
   List<Income> incomes = [];
   List<Expense> expenses = [];
 
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final incomeList = prefs.getStringList('incomes') ?? [];
+    final expenseList = prefs.getStringList('expenses') ?? [];
+
+    print("Loaded Incomes: $incomeList");
+    print("Loaded Expenses: $expenseList");
+
+    setState(() {
+      incomes =
+          incomeList.map((item) => Income.fromJson(jsonDecode(item))).toList();
+      expenses = expenseList
+          .map((item) => Expense.fromJson(jsonDecode(item)))
+          .toList();
+    });
+  }
+
+  Future<void> _saveData() async {
+    final prefs = await SharedPreferences.getInstance();
+    List<String> incomeList =
+        incomes.map((income) => jsonEncode(income.toJson())).toList();
+    List<String> expenseList =
+        expenses.map((expense) => jsonEncode(expense.toJson())).toList();
+
+    print("Saving Incomes: $incomeList");
+    print("Saving Expenses: $expenseList");
+
+    await prefs.setStringList('incomes', incomeList);
+    await prefs.setStringList('expenses', expenseList);
+  }
+
   double get totalIncome => incomes.fold(0, (sum, item) => sum + item.amount);
   double get totalExpense => expenses.fold(0, (sum, item) => sum + item.amount);
   double get remainingBalance => totalIncome - totalExpense;
@@ -25,12 +64,14 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       incomes.add(income);
     });
+    _saveData();
   }
 
   void addExpense(Expense expense) {
     setState(() {
       expenses.add(expense);
     });
+    _saveData();
   }
 
   void _showAddIncomeSheet() {
@@ -122,12 +163,6 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             SizedBox(height: 20),
-            Expanded(
-              child: TransactionHistoryPage(
-                incomes: incomes,
-                expenses: expenses,
-              ),
-            ),
             // Buttons
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -146,6 +181,7 @@ class _HomePageState extends State<HomePage> {
             ),
             ElevatedButton(
               onPressed: () {
+                // Navigate to Transaction History
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -160,12 +196,6 @@ class _HomePageState extends State<HomePage> {
             ),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed:
-            _showAddIncomeSheet, // You can also use this for adding expenses
-        child: Icon(Icons.add),
-        tooltip: 'Add Income',
       ),
     );
   }
