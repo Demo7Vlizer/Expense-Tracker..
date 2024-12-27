@@ -2,94 +2,70 @@ import 'package:flutter/material.dart';
 import '../models/income_model.dart';
 import '../models/expense_model.dart';
 
-class TransactionHistoryPage extends StatefulWidget {
+class TransactionHistoryPage extends StatelessWidget {
   final List<Income> incomes;
   final List<Expense> expenses;
 
   TransactionHistoryPage({required this.incomes, required this.expenses});
 
   @override
-  _TransactionHistoryPageState createState() => _TransactionHistoryPageState();
-}
-
-class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
-  String selectedFilter = 'Income'; // Default filter
-
-  @override
   Widget build(BuildContext context) {
-    // Filtered transactions based on the selected filter
-    List<Income> filteredIncomes = widget.incomes;
-    List<Expense> filteredExpenses = widget.expenses;
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Transaction History'),
+        backgroundColor: Colors.lightGreen,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Filter Control
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    setState(() {
-                      selectedFilter = 'Income';
-                    });
+                    // Logic to show income transactions
                   },
                   child: Text('Income'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.teal[200],
+                  ),
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    setState(() {
-                      selectedFilter = 'Expense';
-                    });
+                    // Logic to show expense transactions
                   },
                   child: Text('Expense'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red[200],
+                  ),
                 ),
               ],
             ),
             SizedBox(height: 20),
-            // Display Transactions based on the selected filter
-            if (selectedFilter == 'Income') ...[
-              Text(
-                'Income Transactions',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            Text(
+              'Income Transactions',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            // List of income transactions
+            Expanded(
+              child: ListView.builder(
+                itemCount: incomes.length,
+                itemBuilder: (context, index) {
+                  final income = incomes[index];
+                  return Card(
+                    color: Colors.lightBlue[100],
+                    elevation: 4,
+                    margin: EdgeInsets.symmetric(vertical: 8.0),
+                    child: ListTile(
+                      title: Text(income.title),
+                      subtitle: Text('₹${income.amount.toStringAsFixed(2)}'),
+                    ),
+                  );
+                },
               ),
-              SizedBox(height: 10),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: filteredIncomes.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text('Income: ₹${filteredIncomes[index].amount}'),
-                      subtitle: Text(filteredIncomes[index].date.toString()),
-                    );
-                  },
-                ),
-              ),
-            ] else ...[
-              Text(
-                'Expense Transactions',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 10),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: filteredExpenses.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title:
-                          Text('Expense: ₹${filteredExpenses[index].amount}'),
-                      subtitle: Text(filteredExpenses[index].date.toString()),
-                    );
-                  },
-                ),
-              ),
-            ],
+            ),
+            // Similar section for expenses can be added here
           ],
         ),
       ),

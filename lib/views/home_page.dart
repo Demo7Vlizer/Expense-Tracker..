@@ -97,6 +97,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Home'),
+        backgroundColor: Colors.lightGreen,
         actions: [
           IconButton(
             icon: Icon(Icons.logout),
@@ -120,14 +121,18 @@ class _HomePageState extends State<HomePage> {
             // Dashboard Cards
             Card(
               elevation: 4,
+              color: Colors.lightBlue[100],
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   children: [
-                    Text('Remaining Balance', style: TextStyle(fontSize: 18)),
+                    Text('Remaining Balance',
+                        style: TextStyle(fontSize: 18, color: Colors.black)),
                     Text('₹${remainingBalance.toStringAsFixed(2)}',
                         style: TextStyle(
-                            fontSize: 24, fontWeight: FontWeight.bold)),
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black)),
                   ],
                 ),
               ),
@@ -135,14 +140,18 @@ class _HomePageState extends State<HomePage> {
             SizedBox(height: 20),
             Card(
               elevation: 4,
+              color: Colors.green[100],
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   children: [
-                    Text('Total Income', style: TextStyle(fontSize: 18)),
+                    Text('Total Income',
+                        style: TextStyle(fontSize: 18, color: Colors.black)),
                     Text('₹${totalIncome.toStringAsFixed(2)}',
                         style: TextStyle(
-                            fontSize: 24, fontWeight: FontWeight.bold)),
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black)),
                   ],
                 ),
               ),
@@ -150,14 +159,18 @@ class _HomePageState extends State<HomePage> {
             SizedBox(height: 20),
             Card(
               elevation: 4,
+              color: Colors.red[100],
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   children: [
-                    Text('Total Expense', style: TextStyle(fontSize: 18)),
+                    Text('Total Expense',
+                        style: TextStyle(fontSize: 18, color: Colors.black)),
                     Text('₹${totalExpense.toStringAsFixed(2)}',
                         style: TextStyle(
-                            fontSize: 24, fontWeight: FontWeight.bold)),
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black)),
                   ],
                 ),
               ),
@@ -171,11 +184,15 @@ class _HomePageState extends State<HomePage> {
                   onPressed: _showAddIncomeSheet,
                   icon: Icon(Icons.add),
                   label: Text('Add Income'),
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.teal[200]),
                 ),
                 ElevatedButton.icon(
                   onPressed: _showAddExpenseSheet,
                   icon: Icon(Icons.remove),
                   label: Text('Add Expense'),
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red[200]),
                 ),
               ],
             ),
@@ -193,6 +210,8 @@ class _HomePageState extends State<HomePage> {
                 );
               },
               child: Text('View Transaction History'),
+              style:
+                  ElevatedButton.styleFrom(backgroundColor: Colors.blue[200]),
             ),
           ],
         ),
