@@ -15,18 +15,38 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
+        top: false,
         child: Consumer<TransactionProvider>(
           builder: (context, provider, child) {
             return CustomScrollView(
               slivers: [
+                SliverPadding(
+                  padding:
+                      EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+                  sliver: SliverToBoxAdapter(child: SizedBox(height: 8)),
+                ),
                 SliverAppBar(
-                  expandedHeight: 260,
+                  expandedHeight: 280,
                   floating: true,
                   pinned: true,
+                  backgroundColor: Color(0xFF1A237E),
+                  elevation: 0,
+                  stretch: true,
+                  toolbarHeight: 60,
                   flexibleSpace: FlexibleSpaceBar(
                     background: _buildHeader(context, provider),
                   ),
-                  title: Text('My Finances'),
+                  title: Padding(
+                    padding: EdgeInsets.only(top: 8),
+                    child: Text(
+                      'My Finances',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
                 ),
                 SliverToBoxAdapter(
                   child: _buildQuickActions(context),
@@ -175,12 +195,13 @@ class HomePage extends StatelessWidget {
 
   Widget _buildHeader(BuildContext context, TransactionProvider provider) {
     return Container(
-      padding: EdgeInsets.fromLTRB(16, 16, 16, 24),
+      padding: EdgeInsets.fromLTRB(
+          16, MediaQuery.of(context).padding.top + 16, 16, 24),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF1A237E), Color(0xFF3949AB)],
+          colors: [Color(0xFF1A237E), Color(0xFF303F9F)],
           stops: [0.0, 1.0],
         ),
         borderRadius: BorderRadius.only(

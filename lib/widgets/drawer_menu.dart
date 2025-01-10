@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../views/home_page.dart';
 import '../views/income_page.dart';
 import '../views/expense_page.dart';
@@ -80,7 +81,7 @@ class DrawerMenu extends StatelessWidget {
           ListTile(
             title: Text('Logout'),
             onTap: () {
-              AuthService.logout();
+              Provider.of<AuthService>(context, listen: false).logout();
               Navigator.pushReplacementNamed(context, '/');
             },
           ),
