@@ -1,5 +1,6 @@
 // lib/views/home_page.dart
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../providers/transaction_provider.dart';
@@ -13,182 +14,183 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Set system UI overlay style for status bar
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+      systemNavigationBarColor: Colors.white,
+      systemNavigationBarIconBrightness: Brightness.dark,
+    ));
+
     return Scaffold(
-      body: SafeArea(
-        top: false,
-        child: Consumer<TransactionProvider>(
-          builder: (context, provider, child) {
-            return CustomScrollView(
-              slivers: [
-                SliverPadding(
-                  padding:
-                      EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-                  sliver: SliverToBoxAdapter(child: SizedBox(height: 8)),
+      backgroundColor: Colors.grey[50],
+      body: Consumer<TransactionProvider>(
+        builder: (context, provider, child) {
+          return CustomScrollView(
+            physics: BouncingScrollPhysics(),
+            slivers: [
+              SliverAppBar(
+                expandedHeight: 280,
+                floating: false,
+                pinned: true,
+                backgroundColor: Color(0xFF1A237E),
+                elevation: 0,
+                stretch: true,
+                toolbarHeight: 60,
+                systemOverlayStyle: SystemUiOverlayStyle.light,
+                flexibleSpace: FlexibleSpaceBar(
+                  background: _buildHeader(context, provider),
                 ),
-                SliverAppBar(
-                  expandedHeight: 280,
-                  floating: true,
-                  pinned: true,
-                  backgroundColor: Color(0xFF1A237E),
-                  elevation: 0,
-                  stretch: true,
-                  toolbarHeight: 60,
-                  flexibleSpace: FlexibleSpaceBar(
-                    background: _buildHeader(context, provider),
-                  ),
-                  title: Padding(
-                    padding: EdgeInsets.only(top: 8),
-                    child: Text(
-                      'My Finances',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
+                title: Padding(
+                  padding: EdgeInsets.only(top: 4),
+                  child: Text(
+                    'My Finances',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
                     ),
                   ),
                 ),
-                SliverToBoxAdapter(
-                  child: _buildQuickActions(context),
-                ),
-                SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      if (index == 0) {
-                        return _buildRecentTransactionsHeader(
-                            context, provider);
-                      }
-                      final transactions =
-                          provider.transactions.take(5).toList();
-                      if (transactions.isEmpty) {
-                        return Center(
-                          child: Padding(
-                            padding: EdgeInsets.all(32),
-                            child: Text(
-                              'No transactions yet',
-                              style: TextStyle(color: Colors.grey),
-                            ),
-                          ),
-                        );
-                      }
-                      final transaction = transactions[index - 1];
-                      return Padding(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                        child: Card(
-                          elevation: 2,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            side: BorderSide(
-                              color: Colors.grey.withOpacity(0.2),
-                              width: 1,
-                            ),
-                          ),
-                          child: ListTile(
-                            contentPadding: EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 12),
-                            leading: Container(
-                              width: 48,
-                              height: 48,
-                              decoration: BoxDecoration(
-                                color: transaction.isIncome
-                                    ? Color(0xFF4CAF50).withOpacity(0.12)
-                                    : Color(0xFFE53935).withOpacity(0.12),
-                                borderRadius: BorderRadius.circular(12),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.05),
-                                    blurRadius: 4,
-                                    offset: Offset(0, 2),
-                                  ),
-                                ],
-                              ),
-                              child: Icon(
-                                transaction.isIncome
-                                    ? Icons.arrow_downward_rounded
-                                    : Icons.arrow_upward_rounded,
-                                color: transaction.isIncome
-                                    ? Color(0xFF4CAF50)
-                                    : Color(0xFFE53935),
-                                size: 24,
-                              ),
-                            ),
-                            title: Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    transaction.title,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 17,
-                                      letterSpacing: 0.2,
-                                      color: Colors.grey[800],
-                                    ),
-                                  ),
-                                ),
-                                Text(
-                                  _currencyFormat.format(transaction.amount),
-                                  style: TextStyle(
-                                    color: transaction.isIncome
-                                        ? Color(0xFF4CAF50)
-                                        : Color(0xFFE53935),
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 17,
-                                    letterSpacing: 0.2,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            subtitle: Row(
-                              children: [
-                                Icon(
-                                  Icons.category_outlined,
-                                  size: 14,
-                                  color: Colors.grey[600],
-                                ),
-                                SizedBox(width: 4),
-                                Text(
-                                  transaction.category,
-                                  style: TextStyle(
-                                    color: Colors.grey[600],
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                if (transaction.note?.isNotEmpty ?? false) ...[
-                                  SizedBox(width: 8),
-                                  Icon(
-                                    Icons.note_outlined,
-                                    size: 14,
-                                    color: Colors.grey[600],
-                                  ),
-                                ],
-                                Spacer(),
-                                Text(
-                                  DateFormat('MMM dd').format(transaction.date),
-                                  style: TextStyle(
-                                    color: Colors.grey[600],
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            onTap: () =>
-                                _showTransactionDetails(context, transaction),
+              ),
+              SliverToBoxAdapter(
+                child: _buildQuickActions(context),
+              ),
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    if (index == 0) {
+                      return _buildRecentTransactionsHeader(context, provider);
+                    }
+                    final transactions = provider.transactions.take(5).toList();
+                    if (transactions.isEmpty) {
+                      return Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(32),
+                          child: Text(
+                            'No transactions yet',
+                            style: TextStyle(color: Colors.grey),
                           ),
                         ),
                       );
-                    },
-                    childCount: provider.transactions.isEmpty
-                        ? 2
-                        : provider.transactions.take(5).length + 1,
-                  ),
+                    }
+                    final transaction = transactions[index - 1];
+                    return Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                      child: Card(
+                        elevation: 2,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          side: BorderSide(
+                            color: Colors.grey.withOpacity(0.2),
+                            width: 1,
+                          ),
+                        ),
+                        child: ListTile(
+                          contentPadding: EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 12),
+                          leading: Container(
+                            width: 48,
+                            height: 48,
+                            decoration: BoxDecoration(
+                              color: transaction.isIncome
+                                  ? Color(0xFF4CAF50).withOpacity(0.12)
+                                  : Color(0xFFE53935).withOpacity(0.12),
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.05),
+                                  blurRadius: 4,
+                                  offset: Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Icon(
+                              transaction.isIncome
+                                  ? Icons.arrow_downward_rounded
+                                  : Icons.arrow_upward_rounded,
+                              color: transaction.isIncome
+                                  ? Color(0xFF4CAF50)
+                                  : Color(0xFFE53935),
+                              size: 24,
+                            ),
+                          ),
+                          title: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  transaction.title,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 17,
+                                    letterSpacing: 0.2,
+                                    color: Colors.grey[800],
+                                  ),
+                                ),
+                              ),
+                              Text(
+                                _currencyFormat.format(transaction.amount),
+                                style: TextStyle(
+                                  color: transaction.isIncome
+                                      ? Color(0xFF4CAF50)
+                                      : Color(0xFFE53935),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 17,
+                                  letterSpacing: 0.2,
+                                ),
+                              ),
+                            ],
+                          ),
+                          subtitle: Row(
+                            children: [
+                              Icon(
+                                Icons.category_outlined,
+                                size: 14,
+                                color: Colors.grey[600],
+                              ),
+                              SizedBox(width: 4),
+                              Text(
+                                transaction.category,
+                                style: TextStyle(
+                                  color: Colors.grey[600],
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              if (transaction.note?.isNotEmpty ?? false) ...[
+                                SizedBox(width: 8),
+                                Icon(
+                                  Icons.note_outlined,
+                                  size: 14,
+                                  color: Colors.grey[600],
+                                ),
+                              ],
+                              Spacer(),
+                              Text(
+                                DateFormat('MMM dd').format(transaction.date),
+                                style: TextStyle(
+                                  color: Colors.grey[600],
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                          onTap: () =>
+                              _showTransactionDetails(context, transaction),
+                        ),
+                      ),
+                    );
+                  },
+                  childCount: provider.transactions.isEmpty
+                      ? 2
+                      : provider.transactions.take(5).length + 1,
                 ),
-              ],
-            );
-          },
-        ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -196,7 +198,7 @@ class HomePage extends StatelessWidget {
   Widget _buildHeader(BuildContext context, TransactionProvider provider) {
     return Container(
       padding: EdgeInsets.fromLTRB(
-          16, MediaQuery.of(context).padding.top + 16, 16, 24),
+          16, MediaQuery.of(context).padding.top + 24, 16, 24),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -247,7 +249,7 @@ class HomePage extends StatelessWidget {
               ],
             ),
           ),
-          SizedBox(height: 24),
+          SizedBox(height: 32),
           Row(
             children: [
               _buildBalanceCard(
@@ -342,20 +344,32 @@ class HomePage extends StatelessWidget {
   Widget _buildQuickActions(BuildContext context) {
     final provider = Provider.of<TransactionProvider>(context, listen: false);
     return Container(
-      padding: EdgeInsets.all(20),
+      padding: EdgeInsets.fromLTRB(20, 24, 20, 16),
+      margin: EdgeInsets.only(top: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             'Quick Actions',
             style: TextStyle(
-              fontSize: 22,
+              fontSize: 20,
               fontWeight: FontWeight.w700,
               color: Colors.grey[800],
               letterSpacing: 0.3,
             ),
           ),
-          SizedBox(height: 20),
+          SizedBox(height: 24),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
