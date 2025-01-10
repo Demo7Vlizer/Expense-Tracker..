@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'add_income_page.dart';
-import '../models/income_model.dart';
+import '../models/transaction_model.dart';
 
 class IncomePage extends StatelessWidget {
-  final Function(Income) onAddIncome;
+  final Function(Transaction) onAddIncome;
 
   IncomePage({required this.onAddIncome});
 

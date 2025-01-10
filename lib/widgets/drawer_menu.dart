@@ -2,22 +2,19 @@ import 'package:flutter/material.dart';
 import '../views/home_page.dart';
 import '../views/income_page.dart';
 import '../views/expense_page.dart';
-import '../models/income_model.dart';
-import '../models/expense_model.dart';
-import '../views/transaction_history.dart';
+import '../models/transaction_model.dart';
+import '../views/history_page.dart';
 import '../services/auth_service.dart';
 
 class DrawerMenu extends StatelessWidget {
-  final Function(Income) onAddIncome;
-  final Function(Expense) onAddExpense;
-  final List<Income> incomes;
-  final List<Expense> expenses;
+  final Function(Transaction) onAddIncome;
+  final Function(Transaction) onAddExpense;
+  final List<Transaction> transactions;
 
   DrawerMenu({
     required this.onAddIncome,
     required this.onAddExpense,
-    required this.incomes,
-    required this.expenses,
+    required this.transactions,
   });
 
   @override
@@ -75,10 +72,7 @@ class DrawerMenu extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => TransactionHistoryPage(
-                    incomes: incomes,
-                    expenses: expenses,
-                  ),
+                  builder: (_) => HistoryPage(),
                 ),
               );
             },
