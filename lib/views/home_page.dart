@@ -20,7 +20,7 @@ class HomePage extends StatelessWidget {
             return CustomScrollView(
               slivers: [
                 SliverAppBar(
-                  expandedHeight: 250,
+                  expandedHeight: 260,
                   floating: true,
                   pinned: true,
                   flexibleSpace: FlexibleSpaceBar(
@@ -54,34 +54,42 @@ class HomePage extends StatelessWidget {
                       final transaction = transactions[index - 1];
                       return Padding(
                         padding:
-                            EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                            EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                         child: Card(
-                          elevation: 0,
+                          elevation: 2,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(20),
                             side: BorderSide(
                               color: Colors.grey.withOpacity(0.2),
                               width: 1,
                             ),
                           ),
                           child: ListTile(
-                            contentPadding: EdgeInsets.all(12),
+                            contentPadding: EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 12),
                             leading: Container(
                               width: 48,
                               height: 48,
                               decoration: BoxDecoration(
                                 color: transaction.isIncome
-                                    ? Colors.green.withOpacity(0.1)
-                                    : Colors.red.withOpacity(0.1),
+                                    ? Color(0xFF4CAF50).withOpacity(0.12)
+                                    : Color(0xFFE53935).withOpacity(0.12),
                                 borderRadius: BorderRadius.circular(12),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.05),
+                                    blurRadius: 4,
+                                    offset: Offset(0, 2),
+                                  ),
+                                ],
                               ),
                               child: Icon(
                                 transaction.isIncome
                                     ? Icons.arrow_downward_rounded
                                     : Icons.arrow_upward_rounded,
                                 color: transaction.isIncome
-                                    ? Colors.green
-                                    : Colors.red,
+                                    ? Color(0xFF4CAF50)
+                                    : Color(0xFFE53935),
                                 size: 24,
                               ),
                             ),
@@ -92,7 +100,9 @@ class HomePage extends StatelessWidget {
                                     transaction.title,
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 16,
+                                      fontSize: 17,
+                                      letterSpacing: 0.2,
+                                      color: Colors.grey[800],
                                     ),
                                   ),
                                 ),
@@ -100,10 +110,11 @@ class HomePage extends StatelessWidget {
                                   _currencyFormat.format(transaction.amount),
                                   style: TextStyle(
                                     color: transaction.isIncome
-                                        ? Colors.green
-                                        : Colors.red,
+                                        ? Color(0xFF4CAF50)
+                                        : Color(0xFFE53935),
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 16,
+                                    fontSize: 17,
+                                    letterSpacing: 0.2,
                                   ),
                                 ),
                               ],
@@ -121,6 +132,7 @@ class HomePage extends StatelessWidget {
                                   style: TextStyle(
                                     color: Colors.grey[600],
                                     fontSize: 14,
+                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
                                 if (transaction.note?.isNotEmpty ?? false) ...[
@@ -137,6 +149,7 @@ class HomePage extends StatelessWidget {
                                   style: TextStyle(
                                     color: Colors.grey[600],
                                     fontSize: 12,
+                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
                               ],
@@ -167,14 +180,18 @@ class HomePage extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF2196F3), Color(0xFF1976D2)],
+          colors: [Color(0xFF1A237E), Color(0xFF3949AB)],
           stops: [0.0, 1.0],
+        ),
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(32),
+          bottomRight: Radius.circular(32),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 10,
-            offset: Offset(0, 5),
+            color: Colors.black.withOpacity(0.15),
+            blurRadius: 15,
+            offset: Offset(0, 8),
           ),
         ],
       ),
@@ -185,36 +202,44 @@ class HomePage extends StatelessWidget {
           Text(
             'Total Balance',
             style: TextStyle(
-              color: Colors.white.withOpacity(0.8),
-              fontSize: 16,
+              color: Colors.white.withOpacity(0.9),
+              fontSize: 18,
               fontWeight: FontWeight.w500,
+              letterSpacing: 0.5,
             ),
           ),
-          SizedBox(height: 8),
+          SizedBox(height: 12),
           Text(
             _currencyFormat
                 .format(provider.totalIncome - provider.totalExpense),
             style: TextStyle(
               color: Colors.white,
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
+              fontSize: 36,
+              fontWeight: FontWeight.w700,
               letterSpacing: -0.5,
+              shadows: [
+                Shadow(
+                  color: Colors.black.withOpacity(0.2),
+                  offset: Offset(0, 2),
+                  blurRadius: 4,
+                ),
+              ],
             ),
           ),
-          SizedBox(height: 20),
+          SizedBox(height: 24),
           Row(
             children: [
               _buildBalanceCard(
                 'Income',
                 provider.totalIncome,
-                Colors.green,
+                Color(0xFF4CAF50),
                 Icons.arrow_downward_rounded,
               ),
               SizedBox(width: 16),
               _buildBalanceCard(
                 'Expense',
                 provider.totalExpense,
-                Colors.red,
+                Color(0xFFE53935),
                 Icons.arrow_upward_rounded,
               ),
             ],
@@ -228,14 +253,21 @@ class HomePage extends StatelessWidget {
       String title, double amount, Color color, IconData icon) {
     return Expanded(
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.15),
-          borderRadius: BorderRadius.circular(16),
+          color: Colors.white.withOpacity(0.12),
+          borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: Colors.white.withOpacity(0.2),
             width: 1,
           ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 8,
+              offset: Offset(0, 4),
+            ),
+          ],
         ),
         child: Row(
           children: [
@@ -243,12 +275,12 @@ class HomePage extends StatelessWidget {
               padding: EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: color.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(14),
               ),
               child: Icon(
                 icon,
                 color: Colors.white,
-                size: 20,
+                size: 22,
               ),
             ),
             SizedBox(width: 12),
@@ -259,9 +291,10 @@ class HomePage extends StatelessWidget {
                   Text(
                     title,
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.8),
+                      color: Colors.white.withOpacity(0.9),
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
+                      letterSpacing: 0.3,
                     ),
                   ),
                   SizedBox(height: 4),
@@ -270,7 +303,8 @@ class HomePage extends StatelessWidget {
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.2,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -294,12 +328,13 @@ class HomePage extends StatelessWidget {
           Text(
             'Quick Actions',
             style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+              fontSize: 22,
+              fontWeight: FontWeight.w700,
               color: Colors.grey[800],
+              letterSpacing: 0.3,
             ),
           ),
-          SizedBox(height: 16),
+          SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -307,7 +342,7 @@ class HomePage extends StatelessWidget {
                 context,
                 'Add Income',
                 Icons.arrow_downward_rounded,
-                Colors.green,
+                Color(0xFF4CAF50),
                 () => Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -329,7 +364,7 @@ class HomePage extends StatelessWidget {
                 context,
                 'Add Expense',
                 Icons.arrow_upward_rounded,
-                Colors.red,
+                Color(0xFFE53935),
                 () => Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -351,7 +386,7 @@ class HomePage extends StatelessWidget {
                 context,
                 'History',
                 Icons.history_rounded,
-                Colors.blue,
+                Color(0xFF1565C0),
                 () => Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => HistoryPage()),
@@ -374,38 +409,46 @@ class HomePage extends StatelessWidget {
     return GestureDetector(
       onTap: onPressed,
       child: Container(
-        width: 100,
+        width: 105,
         padding: EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(16),
+          color: color.withOpacity(0.08),
+          borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: color.withOpacity(0.2),
-            width: 1,
+            color: color.withOpacity(0.15),
+            width: 1.5,
           ),
+          boxShadow: [
+            BoxShadow(
+              color: color.withOpacity(0.1),
+              blurRadius: 8,
+              offset: Offset(0, 4),
+            ),
+          ],
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              padding: EdgeInsets.all(10),
+              padding: EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: color.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(16),
               ),
               child: Icon(
                 icon,
                 color: color,
-                size: 24,
+                size: 26,
               ),
             ),
-            SizedBox(height: 8),
+            SizedBox(height: 12),
             Text(
               label,
               style: TextStyle(
                 color: color,
-                fontSize: 13,
+                fontSize: 14,
                 fontWeight: FontWeight.w600,
+                letterSpacing: 0.2,
               ),
               textAlign: TextAlign.center,
             ),
