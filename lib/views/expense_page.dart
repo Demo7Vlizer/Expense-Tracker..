@@ -165,37 +165,24 @@ class _ExpensePageState extends State<ExpensePage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            children: [
-                              Icon(Icons.note_alt_outlined,
-                                  size: 20, color: Colors.grey[600]),
-                              SizedBox(width: 8),
-                              Text(
-                                'Note',
-                                style: TextStyle(
-                                  color: Colors.grey[600],
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              Text(
-                                ' (Optional)',
-                                style: TextStyle(
-                                  color: Colors.grey[500],
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ],
+                          Text(
+                            'Note (Optional)',
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                              fontSize: 14,
+                            ),
                           ),
                           SizedBox(height: 8),
                           TextFormField(
                             controller: _noteController,
-                            maxLines: 3,
                             decoration: InputDecoration(
                               hintText: 'Add a note about this expense...',
-                              hintStyle: TextStyle(
-                                  color: Colors.grey[400], fontSize: 14),
                               border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide:
+                                    BorderSide(color: Colors.grey[300]!),
+                              ),
+                              enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide:
                                     BorderSide(color: Colors.grey[300]!),
@@ -206,11 +193,12 @@ class _ExpensePageState extends State<ExpensePage> {
                               ),
                               contentPadding: EdgeInsets.all(16),
                             ),
+                            maxLines: 3,
                           ),
                         ],
                       ),
                     ),
-                    SizedBox(height: 24),
+                    SizedBox(height: 32),
                     ElevatedButton(
                       onPressed: _submitForm,
                       style: ElevatedButton.styleFrom(

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../providers/transaction_provider.dart';
+import '../models/transaction_model.dart';
 import 'add_income_page.dart';
 import 'expense_page.dart';
 import 'history_page.dart';
@@ -19,7 +20,7 @@ class HomePage extends StatelessWidget {
             return CustomScrollView(
               slivers: [
                 SliverAppBar(
-                  expandedHeight: 215,
+                  expandedHeight: 250,
                   floating: true,
                   pinned: true,
                   flexibleSpace: FlexibleSpaceBar(
@@ -51,32 +52,97 @@ class HomePage extends StatelessWidget {
                         );
                       }
                       final transaction = transactions[index - 1];
-                      return ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: transaction.isIncome
-                              ? Colors.green[100]
-                              : Colors.red[100],
-                          child: Icon(
-                            transaction.isIncome
-                                ? Icons.arrow_downward
-                                : Icons.arrow_upward,
-                            color: transaction.isIncome
-                                ? Colors.green
-                                : Colors.red,
+                      return Padding(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                        child: Card(
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            side: BorderSide(
+                              color: Colors.grey.withOpacity(0.2),
+                              width: 1,
+                            ),
                           ),
-                        ),
-                        title: Text(
-                          transaction.title,
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        subtitle: Text(transaction.category),
-                        trailing: Text(
-                          _currencyFormat.format(transaction.amount),
-                          style: TextStyle(
-                            color: transaction.isIncome
-                                ? Colors.green
-                                : Colors.red,
-                            fontWeight: FontWeight.bold,
+                          child: ListTile(
+                            contentPadding: EdgeInsets.all(12),
+                            leading: Container(
+                              width: 48,
+                              height: 48,
+                              decoration: BoxDecoration(
+                                color: transaction.isIncome
+                                    ? Colors.green.withOpacity(0.1)
+                                    : Colors.red.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Icon(
+                                transaction.isIncome
+                                    ? Icons.arrow_downward_rounded
+                                    : Icons.arrow_upward_rounded,
+                                color: transaction.isIncome
+                                    ? Colors.green
+                                    : Colors.red,
+                                size: 24,
+                              ),
+                            ),
+                            title: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    transaction.title,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ),
+                                Text(
+                                  _currencyFormat.format(transaction.amount),
+                                  style: TextStyle(
+                                    color: transaction.isIncome
+                                        ? Colors.green
+                                        : Colors.red,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            subtitle: Row(
+                              children: [
+                                Icon(
+                                  Icons.category_outlined,
+                                  size: 14,
+                                  color: Colors.grey[600],
+                                ),
+                                SizedBox(width: 4),
+                                Text(
+                                  transaction.category,
+                                  style: TextStyle(
+                                    color: Colors.grey[600],
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                if (transaction.note?.isNotEmpty ?? false) ...[
+                                  SizedBox(width: 8),
+                                  Icon(
+                                    Icons.note_outlined,
+                                    size: 14,
+                                    color: Colors.grey[600],
+                                  ),
+                                ],
+                                Spacer(),
+                                Text(
+                                  DateFormat('MMM dd').format(transaction.date),
+                                  style: TextStyle(
+                                    color: Colors.grey[600],
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            onTap: () =>
+                                _showTransactionDetails(context, transaction),
                           ),
                         ),
                       );
@@ -96,13 +162,21 @@ class HomePage extends StatelessWidget {
 
   Widget _buildHeader(BuildContext context, TransactionProvider provider) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: EdgeInsets.fromLTRB(16, 16, 16, 24),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Colors.blue, Colors.blue.shade800],
+          colors: [Color(0xFF2196F3), Color(0xFF1976D2)],
+          stops: [0.0, 1.0],
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            offset: Offset(0, 5),
+          ),
+        ],
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -111,33 +185,37 @@ class HomePage extends StatelessWidget {
           Text(
             'Total Balance',
             style: TextStyle(
-              color: Colors.white70,
-              fontSize: 14,
+              color: Colors.white.withOpacity(0.8),
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
             ),
           ),
-          SizedBox(height: 4),
+          SizedBox(height: 8),
           Text(
             _currencyFormat
                 .format(provider.totalIncome - provider.totalExpense),
             style: TextStyle(
               color: Colors.white,
-              fontSize: 28,
+              fontSize: 32,
               fontWeight: FontWeight.bold,
+              letterSpacing: -0.5,
             ),
           ),
-          SizedBox(height: 8),
+          SizedBox(height: 20),
           Row(
             children: [
               _buildBalanceCard(
                 'Income',
                 provider.totalIncome,
                 Colors.green,
+                Icons.arrow_downward_rounded,
               ),
               SizedBox(width: 16),
               _buildBalanceCard(
                 'Expense',
                 provider.totalExpense,
                 Colors.red,
+                Icons.arrow_upward_rounded,
               ),
             ],
           ),
@@ -146,31 +224,58 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildBalanceCard(String title, double amount, Color color) {
+  Widget _buildBalanceCard(
+      String title, double amount, Color color, IconData icon) {
     return Expanded(
       child: Container(
         padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.1),
+          color: Colors.white.withOpacity(0.15),
           borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: Colors.white.withOpacity(0.2),
+            width: 1,
+          ),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
           children: [
-            Text(
-              title,
-              style: TextStyle(
-                color: Colors.white70,
-                fontSize: 14,
+            Container(
+              padding: EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                icon,
+                color: Colors.white,
+                size: 20,
               ),
             ),
-            SizedBox(height: 8),
-            Text(
-              _currencyFormat.format(amount),
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+            SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.8),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    _currencyFormat.format(amount),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
               ),
             ),
           ],
@@ -181,14 +286,18 @@ class HomePage extends StatelessWidget {
 
   Widget _buildQuickActions(BuildContext context) {
     final provider = Provider.of<TransactionProvider>(context, listen: false);
-    return Padding(
-      padding: EdgeInsets.all(16),
+    return Container(
+      padding: EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             'Quick Actions',
-            style: Theme.of(context).textTheme.titleLarge,
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey[800],
+            ),
           ),
           SizedBox(height: 16),
           Row(
@@ -197,7 +306,7 @@ class HomePage extends StatelessWidget {
               _buildActionButton(
                 context,
                 'Add Income',
-                Icons.arrow_downward,
+                Icons.arrow_downward_rounded,
                 Colors.green,
                 () => Navigator.push(
                   context,
@@ -219,7 +328,7 @@ class HomePage extends StatelessWidget {
               _buildActionButton(
                 context,
                 'Add Expense',
-                Icons.arrow_upward,
+                Icons.arrow_upward_rounded,
                 Colors.red,
                 () => Navigator.push(
                   context,
@@ -241,7 +350,7 @@ class HomePage extends StatelessWidget {
               _buildActionButton(
                 context,
                 'History',
-                Icons.history,
+                Icons.history_rounded,
                 Colors.blue,
                 () => Navigator.push(
                   context,
@@ -262,56 +371,243 @@ class HomePage extends StatelessWidget {
     Color color,
     VoidCallback onPressed,
   ) {
-    return InkWell(
+    return GestureDetector(
       onTap: onPressed,
-      child: Column(
-        children: [
-          Container(
-            padding: EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              icon,
-              color: color,
-              size: 32,
-            ),
+      child: Container(
+        width: 100,
+        padding: EdgeInsets.symmetric(vertical: 16),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: color.withOpacity(0.2),
+            width: 1,
           ),
-          SizedBox(height: 8),
-          Text(
-            label,
-            style: TextStyle(
-              fontWeight: FontWeight.w500,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                icon,
+                color: color,
+                size: 24,
+              ),
             ),
-          ),
-        ],
+            SizedBox(height: 8),
+            Text(
+              label,
+              style: TextStyle(
+                color: color,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildRecentTransactionsHeader(
-    BuildContext context,
-    TransactionProvider provider,
-  ) {
+      BuildContext context, TransactionProvider provider) {
     return Padding(
-      padding: EdgeInsets.all(16),
+      padding: EdgeInsets.fromLTRB(20, 8, 20, 12),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             'Recent Transactions',
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-          TextButton(
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => HistoryPage()),
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey[800],
             ),
-            child: Text('See All'),
           ),
+          if (provider.transactions.isNotEmpty)
+            TextButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => HistoryPage()),
+                );
+              },
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.blue,
+                padding: EdgeInsets.symmetric(horizontal: 12),
+              ),
+              child: Text(
+                'See All',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
         ],
       ),
+    );
+  }
+
+  void _showTransactionDetails(BuildContext context, Transaction transaction) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => Padding(
+        padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Transaction Details',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey[800],
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: transaction.isIncome
+                        ? Colors.green.withOpacity(0.1)
+                        : Colors.red.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    transaction.isIncome ? 'Income' : 'Expense',
+                    style: TextStyle(
+                      color: transaction.isIncome ? Colors.green : Colors.red,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 24),
+            _buildDetailRow(
+              'Title',
+              transaction.title,
+              Icons.title_outlined,
+            ),
+            Divider(height: 24, color: Colors.grey[200]),
+            _buildDetailRow(
+              'Amount',
+              _currencyFormat.format(transaction.amount),
+              Icons.attach_money_rounded,
+              valueColor: transaction.isIncome ? Colors.green : Colors.red,
+            ),
+            Divider(height: 24, color: Colors.grey[200]),
+            _buildDetailRow(
+              'Category',
+              transaction.category,
+              Icons.category_outlined,
+            ),
+            Divider(height: 24, color: Colors.grey[200]),
+            _buildDetailRow(
+              'Date',
+              DateFormat('MMMM dd, yyyy').format(transaction.date),
+              Icons.calendar_today_outlined,
+            ),
+            if (transaction.note?.isNotEmpty ?? false) ...[
+              Divider(height: 24, color: Colors.grey[200]),
+              _buildDetailRow(
+                'Note',
+                transaction.note!,
+                Icons.note_outlined,
+              ),
+            ],
+            SizedBox(height: 24),
+            Row(
+              children: [
+                Expanded(
+                  child: TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: TextButton.styleFrom(
+                      foregroundColor: Colors.grey[600],
+                      padding: EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Text(
+                      'Close',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDetailRow(
+    String label,
+    String value,
+    IconData icon, {
+    Color? valueColor,
+  }) {
+    return Row(
+      children: [
+        Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: Colors.blue.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(
+            icon,
+            color: Colors.blue,
+            size: 20,
+          ),
+        ),
+        SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: TextStyle(
+                  color: Colors.grey[600],
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              SizedBox(height: 2),
+              Text(
+                value,
+                style: TextStyle(
+                  color: valueColor ?? Colors.grey[800],
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
