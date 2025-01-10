@@ -19,7 +19,7 @@ class HomePage extends StatelessWidget {
             return CustomScrollView(
               slivers: [
                 SliverAppBar(
-                  expandedHeight: 180,
+                  expandedHeight: 215,
                   floating: true,
                   pinned: true,
                   flexibleSpace: FlexibleSpaceBar(
@@ -209,6 +209,7 @@ class HomePage extends StatelessWidget {
                           income.amount,
                           income.category,
                           true,
+                          note: income.note,
                         );
                       },
                     ),
@@ -230,6 +231,7 @@ class HomePage extends StatelessWidget {
                           expense.amount,
                           expense.category,
                           false,
+                          note: expense.note,
                         );
                       },
                     ),
