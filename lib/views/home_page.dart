@@ -30,7 +30,7 @@ class HomePage extends StatelessWidget {
             physics: BouncingScrollPhysics(),
             slivers: [
               SliverAppBar(
-                expandedHeight: 280,
+                expandedHeight: 330,
                 floating: false,
                 pinned: true,
                 backgroundColor: Color(0xFF1A237E),
@@ -42,7 +42,7 @@ class HomePage extends StatelessWidget {
                   background: _buildHeader(context, provider),
                 ),
                 title: Padding(
-                  padding: EdgeInsets.only(top: 4),
+                  padding: EdgeInsets.only(top: 30),
                   child: Text(
                     'My Finances',
                     style: TextStyle(
@@ -444,11 +444,11 @@ class HomePage extends StatelessWidget {
     return GestureDetector(
       onTap: onPressed,
       child: Container(
-        width: 105,
-        padding: EdgeInsets.symmetric(vertical: 16),
+        width: 90,
+        padding: EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
           color: color.withOpacity(0.08),
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: color.withOpacity(0.15),
             width: 1.5,
@@ -456,8 +456,8 @@ class HomePage extends StatelessWidget {
           boxShadow: [
             BoxShadow(
               color: color.withOpacity(0.1),
-              blurRadius: 8,
-              offset: Offset(0, 4),
+              blurRadius: 6,
+              offset: Offset(0, 3),
             ),
           ],
         ),
@@ -465,23 +465,23 @@ class HomePage extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              padding: EdgeInsets.all(12),
+              padding: EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: color.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
                 icon,
                 color: color,
-                size: 26,
+                size: 22,
               ),
             ),
-            SizedBox(height: 12),
+            SizedBox(height: 8),
             Text(
               label,
               style: TextStyle(
                 color: color,
-                fontSize: 14,
+                fontSize: 12,
                 fontWeight: FontWeight.w600,
                 letterSpacing: 0.2,
               ),
