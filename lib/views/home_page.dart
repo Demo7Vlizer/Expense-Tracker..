@@ -8,7 +8,6 @@ import '../models/transaction_model.dart';
 import 'add_income_page.dart';
 import 'expense_page.dart';
 import 'history_page.dart';
-import 'calculator_page.dart';
 
 class HomePage extends StatelessWidget {
   final _currencyFormat = NumberFormat.currency(symbol: '₹');
