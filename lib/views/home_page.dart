@@ -8,6 +8,7 @@ import '../models/transaction_model.dart';
 import 'add_income_page.dart';
 import 'expense_page.dart';
 import 'history_page.dart';
+import 'calculator_page.dart';
 
 class HomePage extends StatelessWidget {
   final _currencyFormat = NumberFormat.currency(symbol: '₹');
@@ -366,7 +367,7 @@ class HomePage extends StatelessWidget {
               fontSize: 20,
               fontWeight: FontWeight.w700,
               color: Colors.grey[800],
-              letterSpacing: 0.3,
+              letterSpacing: 0.5,
             ),
           ),
           SizedBox(height: 24),
@@ -445,10 +446,12 @@ class HomePage extends StatelessWidget {
       onTap: onPressed,
       child: Container(
         width: 90,
-        padding: EdgeInsets.symmetric(vertical: 12),
+        padding: EdgeInsets.symmetric(
+          vertical: 12,
+        ),
         decoration: BoxDecoration(
           color: color.withOpacity(0.08),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: color.withOpacity(0.15),
             width: 1.5,
@@ -465,7 +468,7 @@ class HomePage extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              padding: EdgeInsets.all(10),
+              padding: EdgeInsets.only(top: 5, bottom: 5, left: 10, right: 10),
               decoration: BoxDecoration(
                 color: color.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(12),
@@ -473,7 +476,7 @@ class HomePage extends StatelessWidget {
               child: Icon(
                 icon,
                 color: color,
-                size: 22,
+                size: 20,
               ),
             ),
             SizedBox(height: 8),
@@ -481,7 +484,7 @@ class HomePage extends StatelessWidget {
               label,
               style: TextStyle(
                 color: color,
-                fontSize: 12,
+                fontSize: 11,
                 fontWeight: FontWeight.w600,
                 letterSpacing: 0.2,
               ),

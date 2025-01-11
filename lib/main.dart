@@ -5,6 +5,8 @@ import 'services/auth_service.dart';
 import 'providers/transaction_provider.dart';
 import 'views/login_page.dart';
 import 'views/home_page.dart';
+import 'providers/settings_provider.dart';
+import 'services/notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,6 +19,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthService()),
         ChangeNotifierProvider.value(value: transactionProvider),
+        ChangeNotifierProvider(create: (_) => SettingsProvider()),
       ],
       child: MyApp(),
     ),
@@ -27,7 +30,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Expense Tracker',
+      scaffoldMessengerKey: NotificationService.messengerKey,
+      title: 'Smart Finance Tracker',
       theme: ThemeData(
         primarySwatch: Colors.indigo,
         scaffoldBackgroundColor: Colors.grey[50],
@@ -44,7 +48,25 @@ class MyApp extends StatelessWidget {
             borderSide: BorderSide(color: Colors.grey[300]!),
           ),
         ),
+        cardTheme: CardTheme(
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
       ),
+      darkTheme: ThemeData.dark().copyWith(
+        primaryColor: Colors.indigo,
+        cardTheme: CardTheme(
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+      ),
+      themeMode: Provider.of<SettingsProvider>(context).isDarkMode
+          ? ThemeMode.dark
+          : ThemeMode.light,
       home: FutureBuilder(
         future: Provider.of<AuthService>(context, listen: false).init(),
         builder: (context, snapshot) {

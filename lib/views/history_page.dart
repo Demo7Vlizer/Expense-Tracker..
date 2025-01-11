@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import '../providers/transaction_provider.dart';
 import '../models/transaction_model.dart';
+import 'calculator_page.dart';
 
 class HistoryPage extends StatefulWidget {
   @override
@@ -26,6 +27,18 @@ class _HistoryPageState extends State<HistoryPage> {
         elevation: 0,
         backgroundColor: Colors.blue,
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.calculate_rounded),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => CalculatorPage()),
+              );
+            },
+            tooltip: 'Calculator',
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -43,6 +56,40 @@ class _HistoryPageState extends State<HistoryPage> {
                 _buildSearchBar(),
                 SizedBox(height: 16),
                 _buildFilterChips(),
+                SizedBox(height: 16),
+                Consumer<TransactionProvider>(
+                  builder: (context, provider, _) {
+                    final transactions = _getFilteredTransactions(provider);
+                    final totalIncome = transactions
+                        .where((t) => t.isIncome)
+                        .fold(0.0, (sum, t) => sum + t.amount);
+                    final totalExpense = transactions
+                        .where((t) => !t.isIncome)
+                        .fold(0.0, (sum, t) => sum + t.amount);
+
+                    return Row(
+                      children: [
+                        Expanded(
+                          child: _buildSummaryCard(
+                            'Income',
+                            totalIncome,
+                            Icons.arrow_downward,
+                            Colors.green,
+                          ),
+                        ),
+                        SizedBox(width: 16),
+                        Expanded(
+                          child: _buildSummaryCard(
+                            'Expense',
+                            totalExpense,
+                            Icons.arrow_upward,
+                            Colors.red,
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
               ],
             ),
           ),
@@ -73,7 +120,6 @@ class _HistoryPageState extends State<HistoryPage> {
                   );
                 }
 
-                // Group transactions by date
                 Map<String, List<Transaction>> groupedTransactions = {};
                 for (var transaction in transactions) {
                   String date = _dateFormat.format(transaction.date);
@@ -90,8 +136,6 @@ class _HistoryPageState extends State<HistoryPage> {
                     String date = groupedTransactions.keys.elementAt(index);
                     List<Transaction> dayTransactions =
                         groupedTransactions[date]!;
-
-                    // Calculate daily total
                     double dailyTotal =
                         dayTransactions.fold(0, (sum, transaction) {
                       return sum +
@@ -105,50 +149,122 @@ class _HistoryPageState extends State<HistoryPage> {
                       children: [
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 16),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                date,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.grey[700],
-                                  fontSize: 14,
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: Colors.blue.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.calendar_today,
+                                      size: 16,
+                                      color: Colors.blue,
+                                    ),
+                                    SizedBox(width: 8),
+                                    Text(
+                                      date,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.blue,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                              Text(
-                                _currencyFormat.format(dailyTotal),
-                                style: TextStyle(
-                                  color: dailyTotal >= 0
-                                      ? Colors.green
-                                      : Colors.red,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
+                                Text(
+                                  _currencyFormat.format(dailyTotal),
+                                  style: TextStyle(
+                                    color: dailyTotal >= 0
+                                        ? Colors.green
+                                        : Colors.red,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                         SizedBox(height: 8),
-                        ...dayTransactions
-                            .map(
-                              (transaction) => Card(
-                                margin: EdgeInsets.symmetric(
-                                    horizontal: 16, vertical: 4),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: _buildTransactionItem(
-                                    transaction, provider),
+                        ...dayTransactions.map(
+                          (transaction) => Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 4),
+                            child: Card(
+                              elevation: 2,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
                               ),
-                            )
-                            .toList(),
+                              child:
+                                  _buildTransactionItem(transaction, provider),
+                            ),
+                          ),
+                        ),
                         SizedBox(height: 16),
                       ],
                     );
                   },
                 );
               },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSummaryCard(
+      String title, double amount, IconData icon, Color color) {
+    return Container(
+      padding: EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 8,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(icon, color: color, size: 16),
+              ),
+              SizedBox(width: 8),
+              Text(
+                title,
+                style: TextStyle(
+                  color: Colors.grey[600],
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 8),
+          Text(
+            _currencyFormat.format(amount),
+            style: TextStyle(
+              color: color,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
             ),
           ),
         ],
@@ -312,12 +428,24 @@ class _HistoryPageState extends State<HistoryPage> {
                 fontSize: 14,
               ),
             ),
-            if (transaction.note != null) ...[
+            if (transaction.note?.isNotEmpty ?? false) ...[
               SizedBox(width: 8),
               Icon(
                 Icons.note,
                 size: 14,
                 color: Colors.grey[600],
+              ),
+              SizedBox(width: 4),
+              Expanded(
+                child: Text(
+                  transaction.note!,
+                  style: TextStyle(
+                    color: Colors.grey[600],
+                    fontSize: 14,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ],
           ],
@@ -438,11 +566,46 @@ class _HistoryPageState extends State<HistoryPage> {
             ),
             if (transaction.note?.isNotEmpty ?? false) ...[
               Divider(height: 1, color: Colors.grey[200]),
-              _buildDetailRow(
-                'Note',
-                transaction.note!,
-                '',
-                icon: Icons.note_alt_outlined,
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.note_alt_outlined,
+                            size: 20, color: Colors.grey[700]),
+                        SizedBox(width: 12),
+                        Text(
+                          'Note',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey[700],
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 8),
+                    Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[50],
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.grey[200]!),
+                      ),
+                      child: Text(
+                        transaction.note!,
+                        style: TextStyle(
+                          color: Colors.grey[800],
+                          fontSize: 14,
+                          height: 1.5,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
             SizedBox(height: 24),

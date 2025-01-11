@@ -6,6 +6,7 @@ import '../views/expense_page.dart';
 import '../models/transaction_model.dart';
 import '../views/history_page.dart';
 import '../services/auth_service.dart';
+import '../views/calculator_page.dart';
 
 class DrawerMenu extends StatelessWidget {
   final Function(Transaction) onAddIncome;
@@ -37,6 +38,7 @@ class DrawerMenu extends StatelessWidget {
             ),
           ),
           ListTile(
+            leading: Icon(Icons.home),
             title: Text('Home'),
             onTap: () {
               Navigator.pushReplacement(
@@ -46,6 +48,7 @@ class DrawerMenu extends StatelessWidget {
             },
           ),
           ListTile(
+            leading: Icon(Icons.arrow_upward),
             title: Text('Income'),
             onTap: () {
               Navigator.push(
@@ -57,6 +60,7 @@ class DrawerMenu extends StatelessWidget {
             },
           ),
           ListTile(
+            leading: Icon(Icons.arrow_downward),
             title: Text('Expense'),
             onTap: () {
               Navigator.push(
@@ -68,6 +72,7 @@ class DrawerMenu extends StatelessWidget {
             },
           ),
           ListTile(
+            leading: Icon(Icons.history),
             title: Text('Transaction History'),
             onTap: () {
               Navigator.push(
@@ -79,6 +84,20 @@ class DrawerMenu extends StatelessWidget {
             },
           ),
           ListTile(
+            leading: Icon(Icons.calculate),
+            title: Text('Calculator'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => CalculatorPage(),
+                ),
+              );
+            },
+          ),
+          Divider(),
+          ListTile(
+            leading: Icon(Icons.logout),
             title: Text('Logout'),
             onTap: () {
               Provider.of<AuthService>(context, listen: false).logout();
